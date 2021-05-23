@@ -10,31 +10,33 @@ from dotenv import load_dotenv
 load_dotenv()
 D_TOKEN = os.getenv('D_TOKEN')
 DCHANNEL_ID = os.getenv('DCHANNEL_ID')
+POST_URL = os.getenv('POST_URL')
 
 client = commands.Bot(command_prefix='')
-client.run(D_TOKEN)
 
 @client.event
 async def on_ready():
-  print(colored('SYS:  2) dbot {0.user} is now live!'.format(client), 'grey'))
+  print(colored('SYS: dbot {0.user} is now live!'.format(client), 'blue'))
 
 @client.event
 async def on_message(message):
-  global DCHANNEL_ID
-  print(colored('DISC: message received', 'magenta'))
+  print(colored('DISC: message received', 'blue'))
   # check that message is from our maplesea-announcements channel
-  if message.channel.id == DCHANNEL_ID: # TODO: Use env vars
+  if str(message.channel.id) == DCHANNEL_ID:
     # Logging
-    print(colored('DISC: Message from maplesea-announcements channel received:\n\t{}'.format(message.content), 'magenta'))
+    print(colored('DISC: Message from maplesea-announcements channel received:\n\t{}'.format(message.content), 'blue'))
     # Build message object
     msg = { 
-      'title': 'message from discord',
+      'title': '',
       'body': message.content
     }
     # Forward to tele api
-    r = requests.post('https://maplesea-announcements.herokuapp.com/post_to_channel', data=json.dumps(msg))
-    print(colored('DISC: Posted to tele: {}'.format(r.text), 'magenta'))
+    r = requests.post(POST_URL, data=json.dumps(msg))
+    print(colored('DISC: Posted to tele: {}'.format(r.text), 'blue'))
+  else:
+    print(colored('DISC: Message was not posted (incorrect channel id)', 'blue'))
   
+client.run(D_TOKEN)
 
 # TODO: Message edited?
 # message object: <Message 
