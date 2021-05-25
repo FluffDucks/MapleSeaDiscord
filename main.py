@@ -5,6 +5,7 @@ from termcolor import colored
 import requests
 import json
 from dotenv import load_dotenv
+from d2t_formatter import format_content
 
 # Declare disc vars
 load_dotenv()
@@ -26,9 +27,11 @@ async def on_message(message):
     # Logging
     print(colored('DISC: Message from maplesea-announcements channel received:\n\t{}'.format(message.content), 'blue'))
     # Build message object
+    formatted_content = format_content(message.content)
+    print('FORMATTED - ' + formatted_content)
     msg = { 
       'title': '',
-      'body': message.content
+      'body': formatted_content
     }
     # Forward to tele api
     r = requests.post(POST_URL, data=json.dumps(msg))
