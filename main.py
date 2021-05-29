@@ -28,7 +28,7 @@ async def on_message(message):
     print(colored('DISC: Message from maplesea-announcements channel received:\n\t{}'.format(message.content), 'blue'))
     # Build message object
     formatted_content = format_content(message.content)
-    print('FORMATTED - ' + formatted_content)
+    print(colored('DISC: Message formatted: ' + formatted_content, 'blue'))
     msg = { 
       'title': '',
       'body': formatted_content
