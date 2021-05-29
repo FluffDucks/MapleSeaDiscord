@@ -1,13 +1,18 @@
-def format_content(message):
-  # Replace italics (discord: *italics* / _italics_; tele: _italics_ )
+import re
+
+def format_content(message): #  order matters
+  # 1 - Replace italics (discord: *italics* / _italics_; tele: _italics_ )
   message = format_italics(message)
 
-  # Replace bolds (discord: **bold**; tele: *bold*)
+  # 2 - Replace bolds (discord: **bold**; tele: *bold*)
   message = format_bolds(message)
 
-  # Replace strikethroughs
+  # 3 - Replace strikethroughs
 
-  # No support for underline (yet)
+  # 4 - No support for underline (yet)
+
+  # 5 - Format URLs
+  message = format_urls(message)
 
   return message
 
@@ -64,4 +69,14 @@ def format_bolds(message):
   new_message = new_message.replace('*_', '_') # open side
   new_message = new_message.replace('_*', '_') # close side
 
+  return new_message
+
+def format_urls(message):
+  new_message = message
+  new_message = re.sub(
+    r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+    r'[\g<0>](\g<0>)', 
+    new_message,
+    flags=re.MULTILINE
+  )
   return new_message
