@@ -1,5 +1,5 @@
 def format_content(message):
-  # Replace italics (discord: *italics*; tele: _italics_ )
+  # Replace italics (discord: *italics* / _italics_; tele: _italics_ )
   message = format_italics(message)
 
   # Replace bolds (discord: **bold**; tele: *bold*)
@@ -18,7 +18,10 @@ Basic cases:
 
 Edge cases:
 ***words*** -> **_words_**
+*****words***** -> ****_words_****
+
 **words** -> **words**
+****words**** -> ****words****
 """
 def format_italics(message):
   new_message = message
@@ -26,7 +29,6 @@ def format_italics(message):
   for idx in range(len(message)):
     c = message[idx]
     # TODO: escaped chars, need store prev char also
-    # TODO: Nested formatting - stick with bold or italic?
     # When an asterisk is found
     if c == '*':
       if len(stack) > 0 and stack[-1][0] == '*' and (idx - stack[-1][1]) > 1:
@@ -45,5 +47,21 @@ def format_italics(message):
         stack.append((c, idx))
   return new_message
 
+# By this point, italics would have been formatted and remaining asterisk pairs should be
+# converted to single asterisks
 def format_bolds(message):
-  return message
+  new_message = message
+   
+  # While loop to account for multiple asterisks ****hi**** -> *hi*
+  while '**' in new_message:
+    new_message = new_message.replace('**', '*')
+
+  # Handling italicised + bolded words:
+  # MarkdownV1 that we use in telegram does not support nested formats
+  # So, at this point, italicised + bolded words would be like *_some words_* to
+  # which tele would end up rendering as '_some words_', BOLDED.
+  # In this case, we will reduce italicised + bolded words to just italicised words.
+  new_message = new_message.replace('*_', '_') # open side
+  new_message = new_message.replace('_*', '_') # close side
+
+  return new_message
